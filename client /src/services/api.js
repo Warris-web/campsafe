@@ -1,3 +1,5 @@
+
+
 // const BASE     = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 // const getToken = () => localStorage.getItem("cs_token") || "";
 
@@ -10,7 +12,13 @@
 //       ...(opts.headers || {}),
 //     },
 //   }).then((r) => {
-//     if (r.status === 401) { window.location.reload(); return; }
+//     if (r.status === 401) {
+//       // Token invalid/expired — clear session and force re-login
+//       localStorage.removeItem("cs_token");
+//       localStorage.removeItem("cs_user");
+//       window.location.reload();
+//       throw new Error("Session expired");
+//     }
 //     if (!r.ok) throw new Error(`API ${path} → ${r.status}`);
 //     return r.json();
 //   });
@@ -51,13 +59,12 @@ const req = (path, opts = {}) =>
     },
   }).then((r) => {
     if (r.status === 401) {
-      // Token invalid/expired — clear session and force re-login
       localStorage.removeItem("cs_token");
       localStorage.removeItem("cs_user");
       window.location.reload();
       throw new Error("Session expired");
     }
-    if (!r.ok) throw new Error(`API ${path} → ${r.status}`);
+    if (!r.ok) return r.json().then((e) => { throw new Error(e.error || `API ${path} → ${r.status}`); });
     return r.json();
   });
 
@@ -82,4 +89,8 @@ export const api = {
   assignDevice:   (id, device_id) => req(`/api/campers/${id}/assign-device`, { method: "POST", body: JSON.stringify({ device_id }) }),
   getStaffLogs:   (username)      => req(`/api/staff/logs${username ? `?username=${username}` : ""}`),
   getStaffSummary: ()             => req("/api/staff/summary"),
+  // Staff/user management (admin only)
+  getUsers:       ()              => req("/api/auth/users"),
+  createUser:     (data)          => req("/api/auth/register",               { method: "POST", body: JSON.stringify(data) }),
+  updateUser:     (id, data)      => req(`/api/auth/users/${id}`,            { method: "PUT",  body: JSON.stringify(data) }),
 };
