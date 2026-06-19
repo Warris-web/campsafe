@@ -2,7 +2,7 @@
 
 ## Reporting Security Vulnerabilities
 
-If you discover a security vulnerability in CampSafe, please **DO NOT** open a public GitHub issue. Instead, email security@campsafe.dev or contact the maintainers privately.
+If you discover a security vulnerability in CampSafe, please **DO NOT** open a public GitHub issue. Instead, email ibrahimwarris1@gmail.com or contact the maintainers privately.
 
 ### What to Include
 
@@ -104,7 +104,7 @@ CampSafe aims to comply with:
 
 ## Contact
 
-**Email**: security@campsafe.dev
+**Email**: ibrahimwarris1@gmail.com
 **GitHub**: [Report via Security Advisory](https://github.com/Warris-web/campsafe/security/advisories)
 
 ## Acknowledgments
