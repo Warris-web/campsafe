@@ -53,8 +53,8 @@ export default function LoginScreen() {
         </div>
 
         {/* Fields */}
-        <Field label="USERNAME" value={username} onChange={setUsername} placeholder="admin" />
-        <Field label="PASSWORD" value={password} onChange={setPassword} placeholder="••••••••" type="password"
+        <Field label="USERNAME" value={username} onChange={setUsername} placeholder="Enter Username" />
+        <Field label="PASSWORD" value={password} onChange={setPassword} placeholder="Enter Password" type="password"
           onEnter={handleLogin} />
 
         {error && (
@@ -83,7 +83,7 @@ export default function LoginScreen() {
           {loading ? "AUTHENTICATING…" : "SIGN IN"}
         </button>
 
-        <div style={{
+        {/* <div style={{
           marginTop: 20, padding: "12px", background: "var(--bg-card)",
           borderRadius: 6, fontFamily: "var(--font-mono)", fontSize: 11,
           color: "var(--text-muted)", lineHeight: 1.8,
@@ -91,8 +91,8 @@ export default function LoginScreen() {
           <div style={{ color: "var(--text-secondary)", marginBottom: 4 }}>Demo credentials:</div>
           <div>admin / camp2024</div>
           <div>staff1 / staff123</div>
-          <div>medical / med2024</div>
-        </div>
+          <div>medical / med2024</div> */}
+        {/* </div> */}
       </div>
     </div>
   );
