@@ -68,100 +68,64 @@
 //     console.log(`🚀 CampSafe backend running on http://localhost:${PORT}`);
 //   });
 // })();
-
 require("dotenv").config();
 
-const express = require("express");
-const http = require("http");
-const cors = require("cors");
+const express    = require("express");
+const http       = require("http");
+const cors       = require("cors");
 const { Server } = require("socket.io");
+const jwt        = require("jsonwebtoken");
 
 const { connectLocal, connectAtlas } = require("./config/db");
-const authMiddleware = require("./middleware/auth");
+const authMiddleware                 = require("./middleware/auth");
 
-const app = express();
+// ── Fail fast on missing critical config ──────────────────
+if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+  console.error("❌ JWT_SECRET is missing or too short. Set a long random string in .env");
+  console.error("   Generate one with: node -e \"console.log(require('crypto').randomBytes(48).toString('hex'))\"");
+  process.exit(1);
+}
+
+const app    = express();
 const server = http.createServer(app);
-
-// Allowed origins
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://campsafe-alpha.vercel.app"
-];
-
-// Express CORS
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (Postman, mobile apps, etc.)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true
-  })
-);
-
-app.use(express.json());
-
-// Socket.IO
-const io = new Server(server, {
-  cors: {
-    origin: allowedOrigins,
-    methods: ["GET", "POST"],
-    credentials: true
-  }
+const io     = new Server(server, {
+  cors: { origin: process.env.FRONTEND_URL || "http://localhost:5173", methods: ["GET", "POST"] },
 });
 
-// ── Public Routes ───────────────────────────────────────
+app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:5173" }));
+app.use(express.json());
+
+// ── Public ────────────────────────────────────────────────
 app.use("/api/auth", require("./routes/auth"));
 
-// ── Protected Routes ────────────────────────────────────
+// ── Protected ─────────────────────────────────────────────
 app.use("/api/trackers", authMiddleware, require("./routes/trackers"));
-app.use("/api/alerts", authMiddleware, require("./routes/alerts"));
-app.use("/api/zones", authMiddleware, require("./routes/zones"));
+app.use("/api/alerts",   authMiddleware, require("./routes/alerts"));
+app.use("/api/zones",    authMiddleware, require("./routes/zones"));
 app.use("/api/families", authMiddleware, require("./routes/families"));
-app.use("/api/campers", authMiddleware, require("./routes/campers"));
-app.use("/api/staff", authMiddleware, require("./routes/staff"));
+app.use("/api/campers",  authMiddleware, require("./routes/campers"));
+app.use("/api/staff",    authMiddleware, require("./routes/staff"));
 
-// ── Socket.IO JWT Authentication ────────────────────────
+// ── Socket.io with JWT ────────────────────────────────────
 io.use((socket, next) => {
   const token = socket.handshake.auth?.token;
-
-  if (!token) {
-    return next(new Error("Authentication required"));
-  }
-
+  if (!token) return next(new Error("Authentication required"));
   try {
-    const jwt = require("jsonwebtoken");
-
-    socket.user = jwt.verify(
-      token,
-      process.env.JWT_SECRET ||
-        "111e816b7da9fe80e415d3d9d58ef9d4f2ad212d2480ee2838253d6bba0e6f7efb263425828c0dc3aca1d11e3eab1bab"
-    );
-
+    socket.user = jwt.verify(token, process.env.JWT_SECRET);
     next();
-  } catch (err) {
+  } catch {
     next(new Error("Invalid token"));
   }
 });
 
-// ── Socket Events ───────────────────────────────────────
 io.on("connection", (socket) => {
   console.log(`📡 ${socket.user.username} connected`);
-
-  socket.on("disconnect", () => {
-    console.log(`📡 ${socket.user.username} disconnected`);
-  });
+  socket.on("disconnect", () => console.log(`📡 ${socket.user.username} disconnected`));
 });
 
 app.set("io", io);
 
-// ── Boot ────────────────────────────────────────────────
+// ── Boot ──────────────────────────────────────────────────
 const PORT = process.env.PORT || 3001;
 
 (async () => {
@@ -169,6 +133,7 @@ const PORT = process.env.PORT || 3001;
   await connectAtlas();
 
   require("./services/missingWatcher")(app);
+  require("./services/atlasSync")(app);
 
   if (process.env.SIMULATE_HARDWARE !== "true") {
     require("./services/serialBridge")(app);
@@ -178,6 +143,6 @@ const PORT = process.env.PORT || 3001;
   }
 
   server.listen(PORT, () => {
-    console.log(`🚀 CampSafe backend running on port ${PORT}`);
+    console.log(`🚀 CampSafe backend running on http://localhost:${PORT}`);
   });
 })();
