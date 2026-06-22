@@ -179,12 +179,12 @@ export default function Header({ trackerCount, activeAlerts, zoneAlerts, missing
       </span>
 
       {/* Simulator link */}
-      {/* <a href="/simulator" style={{
+      <a href="/simulator" style={{
         background: "transparent", border: "1px solid var(--border)",
         color: "var(--text-secondary)", borderRadius: 6,
         padding: "5px 10px", fontSize: 11, fontFamily: "var(--font-mono)",
         textDecoration: "none", flexShrink: 0,
-      }}>🎮 SIMULATOR</a> */}
+      }}>SIMULATOR</a>
 
       {/* User */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, borderLeft: "1px solid var(--border)", paddingLeft: 14, flexShrink: 0 }}>
