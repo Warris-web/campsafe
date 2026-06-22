@@ -4,19 +4,20 @@
   "description": "CampSafe React dashboard — live map, SOS alerts, tracker grid",
   "type": "module",
   "scripts": {
-    "dev":     "vite",
-    "build":   "vite build",
+    "dev": "vite",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "leaflet":        "^1.9.4",
-    "react":          "^18.3.1",
-    "react-dom":      "^18.3.1",
-    "react-leaflet":  "^4.2.1",
-    "socket.io-client": "^4.7.5"
+    "leaflet": "^1.9.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-leaflet": "^4.2.1",
+    "socket.io-client": "^4.7.5",
+    "react-router-dom": "^6.23.1"
   },
   "devDependencies": {
-    "@types/react":     "^18.3.3",
+    "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "vite": "^5.3.1"

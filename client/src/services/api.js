@@ -94,3 +94,15 @@ export const api = {
   createUser:     (data)          => req("/api/auth/register",               { method: "POST", body: JSON.stringify(data) }),
   updateUser:     (id, data)      => req(`/api/auth/users/${id}`,            { method: "PUT",  body: JSON.stringify(data) }),
 };
+
+
+
+// Simulator (virtual hardware control) endpoints
+export const simulatorApi = {
+  listTags:   ()                 => req("/api/simulator/tags"),
+  createTag:  (device_id, lat, lng) => req("/api/simulator/tags",           { method: "POST", body: JSON.stringify({ device_id, lat, lng }) }),
+  deleteTag:  (id)                => req(`/api/simulator/tags/${id}`,      { method: "DELETE" }),
+  moveTag:    (id, lat, lng)      => req(`/api/simulator/tags/${id}/move`, { method: "POST", body: JSON.stringify({ lat, lng }) }),
+  toggleSos:  (id, sos)           => req(`/api/simulator/tags/${id}/sos`,  { method: "POST", body: JSON.stringify({ sos }) }),
+  resetAll:   ()                  => req("/api/simulator/reset",           { method: "POST" }),
+};
